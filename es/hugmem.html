@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego del Ahorcado</title>
+    <link rel="shortcut icon" href="html.png">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background-image: url('https://cdn.pixabay.com/photo/2024/02/28/12/32/ai-generated-8601971_1280.jpg');
+            background-size: cover;
+            background-position: center;
+            color: #f8f8f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .game-container {
+            max-width: 600px;
+            text-align: center;
+            padding: 20px;
+            background-color: rgba(48, 48, 48, 0.8);
+            border-radius: 10px;
+        }
+
+        h1 {
+            color: rgb(242, 161, 0);
+            margin-bottom: 20px;
+        }
+
+        .word {
+            font-size: 2em;
+            letter-spacing: 10px;
+            margin-bottom: 20px;
+        }
+
+        .explanation {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+
+        .keyboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(30px, 1fr));
+            gap: 10px;
+        }
+
+        .keyboard button {
+            padding: 10px;
+            font-size: 1.2em;
+            background-color: orange;
+            color: #f8f8f8;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .keyboard button:hover {
+            background-color: #e67e22;
+        }
+
+        .keyboard button:disabled {
+            background-color: #888;
+            cursor: not-allowed;
+        }
+
+        #hangman {
+            margin-top: 20px;
+        }
+
+        #hangman canvas {
+            background-color: #f8f8f8;
+        }
+
+        #new-game-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: rgb(179, 155, 3);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        #new-game-button:hover {
+            background-color: #ffaa00;
+            transform: scale(1.05);
+        }
+
+        #new-game-button:active {
+            transform: scale(0.98);
+        }
+
+        @media (max-width: 600px) {
+            .word {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Ahorcado 🎃</h1>
+        <div id="explanation" class="explanation">Definición: Un ave no voladora que vive en regiones frías.</div>
+        <div id="word" class="word">_ _ _ _ _ _ _</div>
+        <div class="keyboard" id="keyboard"></div>
+        <div id="hangman"><canvas id="hangmanCanvas" width="200" height="200"></canvas></div>
+        <button id="new-game-button">Nueva Partida</button>
+    </div>
+
+    <script>
+        const words = [
+            { word: 'manzana', definition: 'Una fruta dulce que a menudo es roja o verde.' },
+            { word: 'montaña', definition: 'Una gran elevación natural de la superficie terrestre.' },
+            { word: 'río', definition: 'Un gran curso de agua natural que fluye hacia el mar.' },
+            { word: 'elefante', definition: 'Un gran mamífero con una trompa.' },
+            { word: 'océano', definition: 'Un vasto cuerpo de agua salada que cubre casi tres cuartas partes de la Tierra.' },
+            { word: 'guitarra', definition: 'Un instrumento musical con seis cuerdas.' },
+            { word: 'fútbol', definition: 'Un deporte en el que los jugadores patean una pelota hacia una portería.' },
+            { word: 'chaqueta', definition: 'Una prenda de vestir que se lleva en la parte superior del cuerpo para abrigarse.' },
+            { word: 'google', definition: 'Una empresa con sede en Mountain View, conocida por su motor de búsqueda.' },
+            { word: 'isla', definition: 'Un trozo de tierra rodeado de agua.' },
+            { word: 'café', definition: 'Una bebida oscura y amarga hecha de granos de café tostados.' },
+            { word: 'pingüino', definition: 'Un ave no voladora que vive en regiones frías.' },
+            { word: 'tren', definition: 'Una serie de vehículos conectados que viajan sobre rieles.' },
+            { word: 'luna', definition: 'El satélite natural de la Tierra, visible por la noche.' },
+            { word: 'desierto', definition: 'Un área árida de tierra con poca precipitación.' },
+            { word: 'bosque', definition: 'Una vasta área cubierta principalmente por árboles y vegetación.' },
+            { word: 'piano', definition: 'Un gran instrumento musical con un teclado.' },
+        ];
+
+        let currentWord, guessedLetters, mistakes, maxMistakes = 10;
+
+        const wordContainer = document.getElementById('word');
+        const explanationContainer = document.getElementById('explanation');
+        const canvas = document.getElementById('hangmanCanvas');
+        const ctx = canvas.getContext('2d');
+        const newGameButton = document.getElementById('new-game-button');
+
+        function drawHangman() {
+            ctx.strokeStyle = "#000";
+            switch (mistakes) {
+                case 1:
+                    ctx.beginPath();
+                    ctx.moveTo(10, 190);
+                    ctx.lineTo(190, 190); 
+                    ctx.stroke();
+                    break;
+                case 2:
+                    ctx.beginPath();
+                    ctx.moveTo(50, 190);
+                    ctx.lineTo(50, 20); 
+                    ctx.stroke();
+                    break;
+                case 3:
+                    ctx.beginPath();
+                    ctx.moveTo(50, 20);
+                    ctx.lineTo(150, 20); 
+                    ctx.stroke();
+                    break;
+                case 4:
+                    ctx.beginPath();
+                    ctx.moveTo(150, 20);
+                    ctx.lineTo(150, 50); 
+                    ctx.stroke();
+                    break;
+                case 5:
+                    ctx.beginPath();
+                    ctx.arc(150, 70, 20, 0, Math.PI * 2); 
+                    ctx.stroke();
+                    break;
+                case 6:
+                    ctx.beginPath();
+                    ctx.moveTo(150, 90);
+                    ctx.lineTo(150, 150); 
+                    ctx.stroke();
+                    break;
+                case 7:
+                    ctx.beginPath();
+                    ctx.moveTo(150, 110);
+                    ctx.lineTo(130, 140); 
+                    ctx.stroke();
+                    break;
+                case 8:
+                    ctx.beginPath();
+                    ctx.moveTo(150, 110);
+                    ctx.lineTo(170, 140); 
+                    ctx.stroke();
+                    break;
+                case 9:
+                    ctx.beginPath();
+                    ctx.moveTo(150, 150);
+                    ctx.lineTo(130, 180); 
+                    ctx.stroke();
+                    break;
+                case 10:
+                    ctx.beginPath();
+                    ctx.moveTo(150, 150);
+                    ctx.lineTo(170, 180); 
+                    ctx.stroke();
+                    break;
+            }
+        }
+
+        function updateWordDisplay() {
+            wordContainer.textContent = currentWord.word
+                .split('')
+                .map(letter => guessedLetters.includes(letter) ? letter : '_')
+                .join(' ');
+        }
+
+        function handleGuess(letter) {
+            if (!guessedLetters.includes(letter)) {
+                guessedLetters.push(letter);
+                if (currentWord.word.includes(letter)) {
+                    updateWordDisplay();
+                    checkWin();
+                } else {
+                    mistakes++;
+                    drawHangman();
+                    checkLoss();
+                }
+            }
+        }
+
+        function checkWin() {
+            if (currentWord.word.split('').every(letter => guessedLetters.includes(letter))) {
+                setTimeout(() => alert('¡Felicidades, has ganado!'), 100);
+                disableKeyboard();
+            }
+        }
+
+        function checkLoss() {
+            if (mistakes >= maxMistakes) {
+                setTimeout(() => alert(`¡Has perdido! La palabra era: ${currentWord.word}`), 100);
+                disableKeyboard();
+            }
+        }
+
+        function disableKeyboard() {
+            document.querySelectorAll('.keyboard button').forEach(button => button.disabled = true);
+        }
+
+        function initGame() {
+            currentWord = words[Math.floor(Math.random() * words.length)];
+            guessedLetters = [];
+            mistakes = 0;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            explanationContainer.textContent = `Definición: ${currentWord.definition}`;
+            updateWordDisplay();
+            const keyboardContainer = document.getElementById('keyboard');
+
+            keyboardContainer.innerHTML = '';
+            'abcdefghijklmnopqrstuvwxyz'.split('').forEach(letter => {
+                const button = document.createElement('button');
+                button.textContent = letter;
+                button.onclick = () => handleGuess(letter);
+                keyboardContainer.appendChild(button);
+            });
+        }
+
+        newGameButton.addEventListener('click', initGame);
+        document.addEventListener('keydown', event => {
+            const letter = event.key.toLowerCase();
+            if (letter.match(/[a-z]/) && letter.length === 1) {
+                handleGuess(letter);
+            }
+        });
+
+        initGame();
+    </script>
+</body>
+</html>

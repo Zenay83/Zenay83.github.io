@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cronometro</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #e0e0e0;
+            margin: 0;
+        }
+        #stopwatch {
+            font-size: 72px;
+            margin-bottom: 30px;
+            color: #333;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        button {
+            font-size: 20px;
+            margin: 10px 5px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 100%; 
+            max-width: 200px;
+        }
+        button:hover {
+            background-color: #6200ea;
+            color: white;
+            transform: translateY(-2px);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        #controls {
+            display: flex;
+            flex-direction: column; 
+            align-items: center;
+        }
+        @media (min-width: 600px) {
+            #controls {
+                flex-direction: row; 
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div id="stopwatch">00:00:00</div>
+<div id="controls">
+    <button id="start">Avvia</button>
+    <button id="stop">Ferma</button>
+    <button id="reset">Ripristina</button>
+</div>
+
+<script>
+    let startTime, updatedTime, difference, tInterval;
+    let running = false;
+
+    function startTimer() {
+        if (!running) {
+            startTime = new Date().getTime() - (difference || 0);
+            tInterval = setInterval(updateTime, 1000);
+            running = true;
+        }
+    }
+
+    function stopTimer() {
+        clearInterval(tInterval);
+        running = false;
+    }
+
+    function resetTimer() {
+        clearInterval(tInterval);
+        running = false;
+        difference = 0;
+        document.getElementById("stopwatch").innerHTML = "00:00:00";
+    }
+
+    function updateTime() {
+        updatedTime = new Date().getTime();
+        difference = updatedTime - startTime;
+
+        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+        document.getElementById("stopwatch").innerHTML =
+            (hours < 10 ? "0" : "") + hours + ":" +
+            (minutes < 10 ? "0" : "") + minutes + ":" +
+            (seconds < 10 ? "0" : "") + seconds;
+    }
+
+    document.getElementById("start").onclick = startTimer;
+    document.getElementById("stop").onclick = stopTimer;
+    document.getElementById("reset").onclick = resetTimer;
+</script>
+
+</body>

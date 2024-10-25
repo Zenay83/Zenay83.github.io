@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <link rel="shortcut icon" href="html.png">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #303030;
+            font-family: 'Arial', sans-serif;
+        }
+        .calculator {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            width: 300px;
+        }
+        .display {
+            background-color: #222;
+            color: #fff;
+            font-size: 2.5em;
+            text-align: right;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .keys {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        button {
+            padding: 20px;
+            font-size: 1.5em;
+            border: none;
+            border-radius: 10px;
+            background-color: #897b7b;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .clear { background-color: #00ffff; }
+        .delete { background-color: #FF3B30; }
+        .operator { background-color: #FF9500; }
+        .equal { background-color: #c4c41d; }
+    </style>
+</head>
+<body>
+
+<div class="calculator">
+    <div id="display" class="display">0</div>
+    <div class="keys">
+        <button class="clear" onclick="resetCalc()">C</button>
+        <button onclick="calculatePercentage()">%</button>
+        <button class="operator" onclick="sqrtCalc()">√</button>
+        <button class="delete" onclick="deleteDigit()">Del</button>
+        <button onclick="addToDisplay('7')">7</button>
+        <button onclick="addToDisplay('8')">8</button>
+        <button onclick="addToDisplay('9')">9</button>
+        <button class="operator" onclick="setOperator('/')">/</button>
+        <button onclick="addToDisplay('4')">4</button>
+        <button onclick="addToDisplay('5')">5</button>
+        <button onclick="addToDisplay('6')">6</button>
+        <button class="operator" onclick="setOperator('*')">*</button>
+        <button onclick="addToDisplay('1')">1</button>
+        <button onclick="addToDisplay('2')">2</button>
+        <button onclick="addToDisplay('3')">3</button>
+        <button class="operator" onclick="setOperator('-')">-</button>
+        <button onclick="addToDisplay('0')">0</button>
+        <button onclick="addDecimal()">.</button>
+        <button class="equal" onclick="calculateResult()">=</button>
+        <button class="operator" onclick="setOperator('+')">+</button>
+    </div>
+</div>
+
+<script>
+    let displayValue = '0', currentOperator = null, firstOperand = null;
+
+    const displayElement = document.getElementById('display');
+
+    const updateDisplay = () => displayElement.textContent = displayValue;
+
+    const resetCalc = () => { displayValue = '0'; firstOperand = null; currentOperator = null; updateDisplay(); };
+
+    const addToDisplay = (number) => {
+        displayValue = displayValue === '0' ? number : displayValue + number;
+        updateDisplay();
+    };
+
+    const setOperator = (operator) => {
+        if (currentOperator) calculateResult();
+        firstOperand = displayValue;
+        currentOperator = operator;
+        displayValue = '0';
+    };
+
+    const addDecimal = () => {
+        if (!displayValue.includes('.')) {
+            displayValue += '.';
+            updateDisplay();
+        }
+    };
+
+    const deleteDigit = () => {
+        displayValue = displayValue.slice(0, -1) || '0';
+        updateDisplay();
+    };
+
+    const sqrtCalc = () => {
+        displayValue = Math.sqrt(parseFloat(displayValue)).toString();
+        updateDisplay();
+    };
+
+    const calculatePercentage = () => {
+        displayValue = (parseFloat(displayValue) / 100).toString();
+        updateDisplay();
+    };
+
+    const calculateResult = () => {
+        if (currentOperator == null) return;
+
+        const secondOperand = parseFloat(displayValue);
+        let result;
+
+        switch (currentOperator) {
+            case '+': result = parseFloat(firstOperand) + secondOperand; break;
+            case '-': result = parseFloat(firstOperand) - secondOperand; break;
+            case '*': result = parseFloat(firstOperand) * secondOperand; break;
+            case '/': result = parseFloat(firstOperand) / secondOperand; break;
+            default: return;
+        }
+
+        displayValue = result.toString();
+        firstOperand = null;
+        currentOperator = null;
+        updateDisplay();
+    };
+
+    document.addEventListener('keydown', (event) => {
+        const key = event.key;
+        if (!isNaN(key)) addToDisplay(key);
+        else if (['+', '-', '*', '/'].includes(key)) setOperator(key);
+        else if (key === 'Enter') calculateResult();
+        else if (key === 'Escape') resetCalc();
+        else if (key === 'Backspace') deleteDigit();
+        else if (key === '.') addDecimal();
+        else if (key === '%') calculatePercentage();
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Викторина</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .quiz-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 300px;
+        }
+
+        .question {
+            margin-bottom: 20px;
+        }
+
+        .options {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .options li {
+            margin: 10px 0;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            background-color: #c0c0c0;
+        }
+
+        .feedback {
+            margin: 10px 0;
+            font-size: 1.2em;
+        }
+
+        .correct {
+            color: green;
+        }
+
+        .incorrect {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <div class="question" id="question"></div>
+    <ul class="options" id="options"></ul>
+    <div id="feedback" class="feedback"></div>
+    <div id="question-counter"></div>
+    <button id="nextBtn" onclick="nextQuestion()">Следующий вопрос</button>
+</div>
+
+<script>
+    const questions = [
+        {
+            question: "Какой цвет у неба?",
+            options: ["Зеленый", "Синий", "Красный", "Желтый"],
+            answer: 1
+        },
+        {
+            question: "Сколько континентов на Земле?",
+            options: ["5", "6", "7", "8"],
+            answer: 2
+        },
+        {
+            question: "Какого цвета банан?",
+            options: ["Голубой", "Красный", "Желтый", "Зеленый"],
+            answer: 2
+        },
+        {
+            question: "Какой океан самый большой?",
+            options: ["Тихий", "Атлантический", "Индийский", "Северный"],
+            answer: 0
+        },
+        {
+            question: "Сколько железных дорог в России?",
+            options: ["10000", "40000", "70000", "50000"],
+            answer: 2
+        },
+        {
+            question: "Кто написал 'Войну и мир'?",
+            options: ["Тургенев", "Толстой", "Достоевский", "Пушкин"],
+            answer: 1
+        },
+        {
+            question: "Какое животное самое быстрое?",
+            options: ["Гепард", "Лев", "Слон", "Кенгуру"],
+            answer: 0
+        },
+        {
+            question: "Какой язык считается самым распространенным?",
+            options: ["Русский", "Испанский", "Английский", "Китайский"],
+            answer: 2
+        },
+        {
+            question: "Что такое фотосинтез?",
+            options: ["Процесс дыхания", "Процесс роста", "Процесс переработки пищи", "Процесс преобразования солнечного света в энергию"],
+            answer: 3
+        },
+        {
+            question: "Сколько планет в солнечной системе?",
+            options: ["8", "9", "7", "6"],
+            answer: 0
+        },
+    ];
+
+    let currentQuestionIndex = 0;
+
+    function loadQuestion() {
+        const currentQuestion = questions[currentQuestionIndex];
+        document.getElementById("question").textContent = currentQuestion.question;
+        const optionsElement = document.getElementById("options");
+        optionsElement.innerHTML = '';
+        currentQuestion.options.forEach((option, index) => {
+            optionsElement.innerHTML += `<li><input type="radio" name="option" value="${index}"> ${option}</li>`;
+        });
+        clearFeedback();
+        document.getElementById("nextBtn").disabled = true;
+        updateQuestionCounter();
+    }
+
+    function nextQuestion() {
+        const selectedOption = document.querySelector('input[name="option"]:checked');
+        if (selectedOption) {
+            const answer = parseInt(selectedOption.value);
+            const feedbackElement = document.getElementById("feedback");
+            clearFeedback();
+            if (answer === questions[currentQuestionIndex].answer) {
+                feedbackElement.textContent = "Правильно!";
+                feedbackElement.className = "feedback correct";
+            } else {
+                feedbackElement.textContent = "Неправильно!";
+                feedbackElement.className = "feedback incorrect";
+            }
+            currentQuestionIndex++;
+            document.getElementById("nextBtn").disabled = false;
+            if (currentQuestionIndex < questions.length) {
+                setTimeout(() => {
+                    loadQuestion();
+                }, 2000);
+            } else {
+                setTimeout(() => {
+                    alert("Вы завершили викторину!");
+                    currentQuestionIndex = 0; 
+                    loadQuestion();
+                }, 2000);
+            }
+        } else {
+            alert("Пожалуйста, выберите ответ.");
+        }
+    }
+
+    function clearFeedback() {
+        const feedbackElement = document.getElementById("feedback");
+        feedbackElement.textContent = '';
+        feedbackElement.className = "feedback";
+    }
+
+    function updateQuestionCounter() {
+        document.getElementById("question-counter").textContent = `${currentQuestionIndex + 1}/${questions.length}`;
+    }
+
+    document.addEventListener('change', function() {
+        document.getElementById("nextBtn").disabled = false;
+    });
+
+    loadQuestion();
+</script>
+
+</body>
+</html>

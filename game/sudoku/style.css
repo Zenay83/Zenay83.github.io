@@ -1,0 +1,77 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+}
+
+.container {
+    display: flex;
+    flex-direction: column; /* Изменено для мобильной версии */
+}
+
+.sudoku-board {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr); /* Изменено для адаптации к ширине экрана */
+    grid-template-rows: repeat(9, 50px);
+    gap: 2px;
+    border: 2px solid #333;
+    width: 90vw; /* Ширина доски адаптирована для мобильных */
+    max-width: 600px; /* Ограничиваем максимальную ширину */
+}
+
+.cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    border: 1px solid #ccc;
+    background-color: white;
+    cursor: pointer;
+    height: 50px; /* Высота ячейки фиксированная для лучшего восприятия */
+}
+
+.cell:hover {
+    background-color: #eaeaea;
+}
+
+.controls {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.numbers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+}
+
+.number {
+    padding: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    background-color: #c0c0c0; /* Добавляем фон кнопок для лучшего восприятия */
+    border: none;
+    border-radius: 4px; /* Закругляем углы для улучшения стиля */
+}
+
+.number:hover {
+    background-color: #a0a0a0; /* Эффект при наведении для кнопок */
+}
+
+@media (max-width: 400px) {
+    .sudoku-board {
+        grid-template-rows: repeat(9, 40px); /* Меньшая высота ячеек для маленьких экранов */
+    }
+    .cell {
+        font-size: 18px; /* Уменьшаем шрифт для мобильных */
+        height: 40px; /* Меняем высоту для мобильных */
+    }
+    .number {
+        font-size: 18px; /* Уменьшаем шрифт для мобильных кнопок */
+    }
+}

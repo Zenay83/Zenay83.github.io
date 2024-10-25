@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Судоку</title>
+</head>
+<body>
+    <div class="container">
+        <div class="sudoku-board" id="sudoku-board"></div>
+        <div class="controls">
+            <h3>Выберите число:</h3>
+            <div class="numbers">
+                <button class="number" onclick="chooseNumber(1)">1</button>
+                <button class="number" onclick="chooseNumber(2)">2</button>
+                <button class="number" onclick="chooseNumber(3)">3</button>
+                <button class="number" onclick="chooseNumber(4)">4</button>
+                <button class="number" onclick="chooseNumber(5)">5</button>
+                <button class="number" onclick="chooseNumber(6)">6</button>
+                <button class="number" onclick="chooseNumber(7)">7</button>
+                <button class="number" onclick="chooseNumber(8)">8</button>
+                <button class="number" onclick="chooseNumber(9)">9</button>
+            </div>
+            <div>
+                <h3>Выберите уровень сложности:</h3>
+                <button onclick="startGame('easy')">Легкий</button>
+                <button onclick="startGame('medium')">Средний</button>
+                <button onclick="startGame('hard')">Сложный</button>
+            </div>
+            <button onclick="clearBoard()">Очистить доску</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

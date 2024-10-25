@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .quiz-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 300px;
+        }
+
+        .question {
+            margin-bottom: 20px;
+        }
+
+        .options {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .options li {
+            margin: 10px 0;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            background-color: #c0c0c0;
+        }
+
+        .feedback {
+            margin: 10px 0;
+            font-size: 1.2em;
+        }
+
+        .correct {
+            color: green;
+        }
+
+        .incorrect {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <div class="question" id="question"></div>
+    <ul class="options" id="options"></ul>
+    <div id="feedback" class="feedback"></div>
+    <div id="question-counter"></div>
+    <button id="nextBtn" onclick="nextQuestion()">Domanda Successiva</button>
+</div>
+
+<script>
+    const questions = [
+        {
+            question: "Di che colore è il cielo?",
+            options: ["Verde", "Blu", "Rosso", "Giallo"],
+            answer: 1
+        },
+        {
+            question: "Quanti continenti ci sono sulla Terra?",
+            options: ["5", "6", "7", "8"],
+            answer: 2
+        },
+        {
+            question: "Di che colore è una banana?",
+            options: ["Blu", "Rosso", "Giallo", "Verde"],
+            answer: 2
+        },
+        {
+            question: "Qual è l'oceano più grande?",
+            options: ["Pacifico", "Atlantico", "Indiano", "Artico"],
+            answer: 0
+        },
+        {
+            question: "Quante ferrovie ci sono in Russia?",
+            options: ["10.000", "40.000", "70.000", "50.000"],
+            answer: 2
+        },
+        {
+            question: "Chi ha scritto 'Guerra e Pace'?",
+            options: ["Turgenev", "Tolstoy", "Dostoevsky", "Pushkin"],
+            answer: 1
+        },
+        {
+            question: "Qual è l'animale più veloce?",
+            options: ["Ghepardo", "Leone", "Elefante", "Canguro"],
+            answer: 0
+        },
+        {
+            question: "Quale lingua è considerata la più parlata?",
+            options: ["Russo", "Spagnolo", "Inglese", "Cinese"],
+            answer: 2
+        },
+        {
+            question: "Che cos'è la fotosintesi?",
+            options: ["Processo di respirazione", "Processo di crescita", "Processo di trasformazione del cibo", "Processo di conversione della luce solare in energia"],
+            answer: 3
+        },
+        {
+            question: "Quante pianeti ci sono nel sistema solare?",
+            options: ["8", "9", "7", "6"],
+            answer: 0
+        },
+    ];
+
+    let currentQuestionIndex = 0;
+
+    function loadQuestion() {
+        const currentQuestion = questions[currentQuestionIndex];
+        document.getElementById("question").textContent = currentQuestion.question;
+        const optionsElement = document.getElementById("options");
+        optionsElement.innerHTML = '';
+        currentQuestion.options.forEach((option, index) => {
+            optionsElement.innerHTML += `<li><input type="radio" name="option" value="${index}"> ${option}</li>`;
+        });
+        clearFeedback();
+        document.getElementById("nextBtn").disabled = true;
+        updateQuestionCounter();
+    }
+
+    function nextQuestion() {
+        const selectedOption = document.querySelector('input[name="option"]:checked');
+        if (selectedOption) {
+            const answer = parseInt(selectedOption.value);
+            const feedbackElement = document.getElementById("feedback");
+            clearFeedback();
+            if (answer === questions[currentQuestionIndex].answer) {
+                feedbackElement.textContent = "Corretto!";
+                feedbackElement.className = "feedback correct";
+            } else {
+                feedbackElement.textContent = "Sbagliato!";
+                feedbackElement.className = "feedback incorrect";
+            }
+            currentQuestionIndex++;
+            document.getElementById("nextBtn").disabled = false;
+            if (currentQuestionIndex < questions.length) {
+                setTimeout(() => {
+                    loadQuestion();
+                }, 2000);
+            } else {
+                setTimeout(() => {
+                    alert("Hai completato il quiz!");
+                    currentQuestionIndex = 0; 
+                    loadQuestion();
+                }, 2000);
+            }
+        } else {
+            alert("Per favore, seleziona una risposta.");
+        }
+    }
+
+    function clearFeedback() {
+        const feedbackElement = document.getElementById("feedback");
+        feedbackElement.textContent = '';
+        feedbackElement.className = "feedback";
+    }
+
+    function updateQuestionCounter() {
+        document.getElementById("question-counter").textContent = `${currentQuestionIndex + 1}/${questions.length}`;
+    }
+
+    document.addEventListener('change', function() {
+        document.getElementById("nextBtn").disabled = false;
+    });
+
+    loadQuestion();
+</script>
+
+</body>
+</html>
