@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Игра с Дедом Морозом</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-image: url('https://cdn.pixabay.com/photo/2021/08/11/14/22/ice-6538605_1280.jpg');
+            background-size: cover;
+        }
+
+        canvas {
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const sleighImg = new Image();
+        sleighImg.src = 'https://cdn-icons-png.flaticon.com/256/12693/12693363.png';
+        const giftImg = new Image();
+        giftImg.src = 'https://cdn-icons-png.flaticon.com/128/13199/13199042.png';
+        const scoreGiftImg = new Image();
+        scoreGiftImg.src = 'https://cdn-icons-png.flaticon.com/128/13199/13199042.png'; 
+
+        let sleigh = {
+            x: canvas.width / 2 - 50,
+            y: 250,
+            width: 100,
+            height: 50
+        };
+
+        const positions = {
+            top: 200,
+            bottom: 300
+        };
+
+        let gifts = [];
+        const giftLineY = 300;
+        let score = 0;
+
+        function generateGift() {
+            const randomY = Math.random() < 0.5 ? giftLineY : giftLineY - 100;
+            gifts.push({ x: canvas.width, y: randomY, width: 50, height: 50, speed: 2 });
+        }
+
+        function drawSleigh() {
+            ctx.drawImage(sleighImg, sleigh.x, sleigh.y, sleigh.width, sleigh.height);
+        }
+
+        function drawGifts() {
+            gifts.forEach(gift => {
+                ctx.drawImage(giftImg, gift.x, gift.y, gift.width, gift.height);
+            });
+        }
+
+        function updateGifts() {
+            gifts.forEach(gift => {
+                gift.x -= gift.speed;
+                if (gift.x < 0) {
+                    gifts.splice(gifts.indexOf(gift), 1);
+                }
+            });
+        }
+
+        function checkCollision() {
+            gifts.forEach((gift, index) => {
+                if (
+                    sleigh.x < gift.x + gift.width &&
+                    sleigh.x + sleigh.width > gift.x &&
+                    sleigh.y < gift.y + gift.height &&
+                    sleigh.y + sleigh.height > gift.y
+                ) {
+                    score++;
+                    gifts.splice(index, 1);
+                }
+            });
+        }
+
+        function drawLine() {
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 5;
+            ctx.beginPath();
+            ctx.moveTo(0, giftLineY);
+            ctx.lineTo(canvas.width, giftLineY);
+            ctx.stroke();
+        }
+
+        function drawScore() {
+            ctx.drawImage(scoreGiftImg, 10, 10, 50, 50); 
+            ctx.fillStyle = 'black';
+            ctx.font = '30px Arial'; 
+            ctx.fillText(`: ${score}`, 70, 40); 
+        }
+
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawLine();
+            drawSleigh();
+            drawGifts();
+            updateGifts();
+            checkCollision();
+            drawScore(); 
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        canvas.addEventListener('click', (event) => {
+            const mouseY = event.clientY - canvas.getBoundingClientRect().top;
+            sleigh.y = mouseY < giftLineY ? positions.top : positions.bottom;
+        });
+
+        canvas.addEventListener('touchstart', (event) => {
+            const touchY = event.touches[0].clientY - canvas.getBoundingClientRect().top;
+            sleigh.y = touchY < giftLineY ? positions.top : positions.bottom;
+            event.preventDefault(); 
+        });
+
+        setInterval(generateGift, 1000);
+        gameLoop();
+    </script>
+</body>
+
+</html>
