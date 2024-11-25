@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar with Events</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .calendar-container {
+            width: 350px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        #monthYear {
+            font-size: 18px;
+        }
+
+        .calendar-body {
+            padding: 10px;
+        }
+
+        .days-of-week {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            grid-gap: 5px;
+        }
+
+        .day {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .day:hover {
+            background-color: #f1f1f1;
+        }
+
+        .day.selected {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .day.today {
+            background-color: #ffeb3b;
+            font-weight: bold;
+        }
+
+        .day.event {
+            background-color: #f1c40f;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            width: 300px;
+            text-align: center;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 8px 15px;
+            margin-top: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="calendar-container">
+        <div class="calendar-header">
+            <button id="prevMonth">←</button>
+            <h2 id="monthYear"></h2>
+            <button id="nextMonth">→</button>
+        </div>
+        <div class="calendar-body">
+            <div class="days-of-week">
+                <div>Sun</div>
+                <div>Mon</div>
+                <div>Tue</div>
+                <div>Wed</div>
+                <div>Thu</div>
+                <div>Fri</div>
+                <div>Sat</div>
+            </div>
+            <div id="calendarDays" class="calendar-days"></div>
+        </div>
+    </div>
+
+    <div id="eventModal" class="modal">
+        <div class="modal-content">
+            <h3>Add Event</h3>
+            <label for="eventTitle">Event Title:</label>
+            <input type="text" id="eventTitle" />
+            <button id="saveEvent">Save</button>
+            <button id="closeModal">Close</button>
+        </div>
+    </div>
+
+    <script>
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        let currentDate = new Date();
+        let selectedDate = null;
+        let events = {};
+
+        const monthYearElement = document.getElementById('monthYear');
+        const calendarDaysElement = document.getElementById('calendarDays');
+        const eventModal = document.getElementById('eventModal');
+        const eventTitleInput = document.getElementById('eventTitle');
+        const saveEventButton = document.getElementById('saveEvent');
+        const closeModalButton = document.getElementById('closeModal');
+        const prevMonthButton = document.getElementById('prevMonth');
+        const nextMonthButton = document.getElementById('nextMonth');
+
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+
+            monthYearElement.textContent = `${monthNames[month]} ${year}`;
+
+            let daysInCurrentMonth = daysInMonth[month];
+            if (month === 1 && year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)) {
+                daysInCurrentMonth = 29;
+            }
+
+            const firstDayOfMonth = new Date(year, month, 1).getDay();
+
+            calendarDaysElement.innerHTML = '';
+
+            for (let i = 0; i < firstDayOfMonth; i++) {
+                const emptyDay = document.createElement('div');
+                calendarDaysElement.appendChild(emptyDay);
+            }
+
+            for (let i = 1; i <= daysInCurrentMonth; i++) {
+                const dayElement = document.createElement('div');
+                dayElement.textContent = i;
+                dayElement.classList.add('day');
+                dayElement.dataset.date = `${year}-${month + 1}-${i}`;
+
+                const todayDate = new Date();
+                if (todayDate.getFullYear() === year && todayDate.getMonth() === month && todayDate.getDate() === i) {
+                    dayElement.classList.add('today');
+                }
+
+                if (events[`${year}-${month + 1}-${i}`]) {
+                    dayElement.classList.add('event');
+                    dayElement.title = events[`${year}-${month + 1}-${i}`];
+                }
+
+                dayElement.addEventListener('click', () => {
+                    selectedDate = dayElement.dataset.date;
+                    openEventModal();
+                });
+
+                calendarDaysElement.appendChild(dayElement);
+            }
+        }
+
+        function openEventModal() {
+            const event = events[selectedDate];
+            if (event) {
+                eventTitleInput.value = event;
+            } else {
+                eventTitleInput.value = '';
+            }
+
+            eventModal.style.display = 'flex';
+        }
+
+        saveEventButton.addEventListener('click', () => {
+            const eventTitle = eventTitleInput.value.trim();
+            if (eventTitle) {
+                events[selectedDate] = eventTitle;
+            }
+            eventModal.style.display = 'none';
+            renderCalendar();
+        });
+
+        closeModalButton.addEventListener('click', () => {
+            eventModal.style.display = 'none';
+        });
+
+        prevMonthButton.addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar();
+        });
+
+        nextMonthButton.addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar();
+        });
+
+        renderCalendar();
+    </script>
+</body>
+</html>
