@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zeengle Search </title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f4f4f9;
+        }
+        .logo {
+            margin-bottom: 20px;
+        }
+        .logo img {
+            width: 300px;
+        }
+        .search-container {
+            width: 100%;
+            max-width: 600px;
+        }
+        .search-input {
+            width: 100%;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+        }
+        .search-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .search-button:hover {
+            background-color: #357ae8;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">
+        <img src="Group 845.png" alt="Google Logo">
+    </div>
+    <div class="search-container">
+        <form action="https://www.google.com/search" method="GET">
+            <input type="text" name="q" class="search-input" placeholder="Search Zeengle or type a query...">
+            <button type="submit" class="search-button">Zeegle Search</button>
+        </form>
+    </div>
+</body>
+</html>
