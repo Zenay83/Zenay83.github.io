@@ -3,108 +3,280 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zen prog</title>
+    <title>App Mockup</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start; 
-            align-items: center; 
-            height: 100vh;
-            background-color: #f4f4f4;
-            margin: 0; 
-            padding-top: 20px; 
+            margin: 0;
+            padding: 0;
+            background-color: #cccccc;
+            overflow: hidden; 
         }
-        h1 {
-            margin-bottom: 20px;
+        header {
+            background-image: url('https://cdn.pixabay.com/photo/2014/02/07/10/19/winter-260817_1280.jpg');
+            background-size: cover;
+            background-position: center;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid #ddd;
         }
-        .button {
+        header img {
+            max-width: 250px;
+            height: auto;
+        }
+        nav {
             display: flex;
-            align-items: center; 
             justify-content: center;
-            margin: 10px;
-            padding: 10px; 
-            font-size: 16px;
-            cursor: pointer;
+            background-color: #00e1ff;
+            padding: 10px;
+        }
+        nav button {
+            background: none;
             border: none;
-            border-radius: 5px;
-            background-color: #00f2ff;
-            color: black;
-            transition: background-color 0.3s;
-            width: 200px;
-            height: 60px; 
-            white-space: nowrap;
+            margin: 0 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #333;
         }
-        .button img {
-            width: 30px; 
-            height: 30px; 
-            margin-right: 10px; 
+        nav button.active {
+            color: #000;
+            border-bottom: 2px solid #000;
         }
-        .button:hover {
-            background-color: #0056b3;
+        .content {
+            display: none;
+            text-align: center;
+            padding: 20px;
         }
-        .dropdown {
-            position: relative;
+        .content.active {
+            display: block;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            justify-items: center;
+        }
+        .card {
+            width: 150px;
+            border: 1px solid #ccc;
+            background: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+        .card img {
+            width: 100%;
+            height: auto;
+        }
+        .card p {
+            margin: 10px 0 0;
+            font-size: 14px;
+        }
+        .card a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+        .snowflake {
+            position: fixed;
+            top: -10px;
+            color: white;
+            font-size: 1em;
+            pointer-events: none;
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            0% {
+                transform: translateY(0);
+            }
+            100% {
+                transform: translateY(100vh);
+            }
+        }
+        .about-box {
+            background: white;
+            border: 1px solid black;
+            padding: 20px;
             display: inline-block;
         }
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: #f9f9f9;
-            min-width: 160px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-            z-index: 1;
+        .language-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 150px;
+            height: 50px;
+            margin: 10px;
+            background: white;
+            border: 1px solid black;
+            cursor: pointer;
         }
-        .dropdown-content a {
-            color: black;
-            padding: 12px 16px;
-            text-decoration: none;
-            display: block;
-        }
-        .dropdown-content a:hover {
-            background-color: #f1f1f1;
-        }
-        .dropdown:hover .dropdown-content {
-            display: block;
+        .language-button img {
+            max-width: 30px;
+            margin-right: 10px;
         }
     </style>
 </head>
 <body>
 
-    <h1 id="welcome-text">Zen prog🎄</h1>
+<header>
+    <img src="Group 846.png" alt="Logo">
+</header>
 
-    <a href="game.html" id="games-link">
-        <button class="button" id="games-button">
-            <img src="https://cdn-icons-png.flaticon.com/128/13/13973.png" alt="Games">
-            Games
-        </button>
-    </a>
-    <a href="app.html">
-        <button class="button" id="apps-button">
-            <img src="https://cdn-icons-png.flaticon.com/512/29/29531.png" alt="Apps"> 
-            Apps
-        </button>
-    </a>
-    <a href="aboutus.html">
-        <button class="button" id="about-button">
-            <img src="https://cdn-icons-png.flaticon.com/128/33/33308.png" alt="About Us"> 
-            About Us
-        </button>
-    </a>
-    
-    <div class="dropdown">
-        <button class="button dropdown-button">
-            <img src="https://cdn-icons-png.flaticon.com/128/3898/3898840.png" alt="down arrow"> Language
-        </button>
-        <div class="dropdown-content">
-            <a href="https://zenay83.github.io/it/index3">Italiano</a>
-            <a href="https://zenay83.github.io/es/index4">Español</a>
-            <a href="https://zenay83.github.io/index">Русский</a>
+<nav>
+    <button onclick="showSection('games')" class="active">Games</button>
+    <button onclick="showSection('apps')">Apps</button>
+    <button onclick="showSection('about')">About Us</button>
+    <button onclick="showSection('languages')">Languages</button>
+</nav>
+
+<div id="games" class="content active">
+    <div class="grid">
+        <div class="card">
+            <a href="https://zenay83.github.io/web-it-team-tic-tac-toe">
+                <img src="https://cdn-icons-png.flaticon.com/128/2314/2314034.png" alt="Game 1">
+                <p>Tic Tac Toe Against AI</p>
+            </a>
+        </div>
+        <div class="card">
+            <a href="https://zenay83.github.io/Web-it-team-coypu-tap-play">
+                <img src="https://cdn-icons-png.flaticon.com/128/17293/17293501.png" alt="Game 2">
+                <p>Tap the Nutria</p>
+            </a>
+        </div>
+        <div class="card">
+            <a href="https://zenay83.github.io/en/sudoku">
+                <img src="https://cdn-icons-png.flaticon.com/128/5190/5190698.png" alt="Game 3">
+                <p>Sudoku</p>
+            </a>
+        </div>
+        <div class="card">
+            <a href="https://zenay83.github.io/en/hugmen">
+                <img src="https://cdn-icons-png.flaticon.com/128/16500/16500823.png" alt="Game 4">
+                <p>Hangman</p>
+            </a>
+        </div>
+        <div class="card">
+            <a href="https://zenay83.github.io/en/memori/memori">
+                <img src="https://cdn-icons-png.flaticon.com/128/14189/14189545.png" alt="Game 5">
+                <p>Memory</p>
+            </a>
+        </div>
+        <div class="card">
+            <a href="https://zenay83.github.io/game/giftsgame">
+                <img src="https://cdn-icons-png.flaticon.com/128/3835/3835818.png" alt="Game 6">
+                <p>Collect all the gifts</p>
+            </a>
+        </div>
+        <div class="card">
+            <a href="ghttps://zenay83.github.io/en/quiz">
+                <img src="https://cdn-icons-png.flaticon.com/128/8776/8776672.png" alt="Game 7">
+                <p>Quiz</p>
+            </a>
+        </div>        
+    </div>
+</div>
+
+<div id="apps" class="content">
+    <div class="grid">
+        <div class="card">
+            <a href="https://zenay83.github.io/en/todo">
+                <img src="https://cdn-icons-png.flaticon.com/128/7692/7692809.png" alt="App 1">
+                <p>To Do App</p>
+            </a>
+        </div>
+        <div class="card">
+            <a href="https://zenay83.github.io/en/calculator">
+                <img src="https://cdn-icons-png.flaticon.com/128/18506/18506925.png" alt="App 2">
+                <p>Calculator</p>
+            </a>
+        </div>
+        <div class="card">
+            <a href="https://zenay83.github.io/en/score">
+                <img src="https://cdn-icons-png.flaticon.com/128/9114/9114482.png" alt="App 3">
+                <p>Countdown to New Year</p>
+            </a>
+        </div>
+        <div class="card">
+            <a href="https://zenay83.github.io/en/stopwatch">
+                <img src="https://cdn-icons-png.flaticon.com/128/11383/11383944.png" alt="App 4">
+                <p>Stopwatch</p>
+            </a>
+        </div>
+        <div class="card">
+            <a href="https://zenay83.github.io/en/Calendar">
+                <img src="https://cdn-icons-png.flaticon.com/128/1048/1048953.png" alt="App 5">
+                <p>Calendar</p>
+            </a>
+        </div>
+        <div class="card">
+            <a href="https://zenay83.github.io/Zeengle.html">
+                <img src="https://cdn-icons-png.flaticon.com/128/873/873117.png" alt="App 6">
+                <p>Zeegle</p>
+            </a>
         </div>
     </div>
-    
-    <footer></footer>
+</div>
+
+<div id="about" class="content">
+    <div class="about-box">
+        <h2>Hello!</h2>
+        <p>My name is Zhenya, and I am a beginner web developer. I am glad to welcome you to my website. Here you can find my games and applications.</p>
+        <p>Also, I am a member of the Pancakes team.</p>
+        <p>Thank you for visiting!</p>
+    </div>    
+</div>
+
+    <div id="languages" class="content">
+        <a href="https://zenay83.github.io/index" class="language-button">
+            <img src="https://cdn-icons-png.flaticon.com/128/3054/3054051.png" alt="Language Icon">
+            <span>Russian</span>
+        </a>
+        <a href="https://zenay83.github.io/es/index4" class="language-button">
+            <img src="https://cdn-icons-png.flaticon.com/128/13482/13482017.png" alt="Language Icon">
+            <span>Spanish</span>
+        </a>
+        <a href="https://zenay83.github.io/it/index3" class="language-button">
+            <img src="https://cdn-icons-png.flaticon.com/128/3053/3053996.png" alt="Language Icon">
+            <span>Italian</span>
+        </a>
+    </div>
+
+
+<script>
+    function showSection(sectionId) {
+        const sections = document.querySelectorAll('.content');
+        const buttons = document.querySelectorAll('nav button');
+
+        sections.forEach(section => {
+            section.classList.remove('active');
+        });
+
+        buttons.forEach(button => {
+            button.classList.remove('active');
+        });
+
+        document.getElementById(sectionId).classList.add('active');
+        document.querySelector(`nav button[onclick="showSection('${sectionId}')"]`).classList.add('active');
+    }
+
+    function createSnowflake() {
+        const snowflake = document.createElement('div');
+        snowflake.classList.add('snowflake');
+        snowflake.textContent = '❄';
+
+        snowflake.style.left = Math.random() * window.innerWidth + 'px';
+        snowflake.style.fontSize = Math.random() * 10 + 10 + 'px';
+        snowflake.style.animationDuration = Math.random() * 5 + 5 + 's';
+
+        document.body.appendChild(snowflake);
+
+        setTimeout(() => {
+            snowflake.remove();
+        }, 10000); 
+    }
+
+    setInterval(createSnowflake, 200);
+</script>
 
 </body>
 </html>
