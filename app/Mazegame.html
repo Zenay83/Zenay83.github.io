@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Maze Game 🌀</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        canvas {
+            border: 2px solid #000;
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="mazeCanvas" width="600" height="600"></canvas>
+
+    <script>
+        const canvas = document.getElementById('mazeCanvas');
+        const ctx = canvas.getContext('2d');
+        let tileSize = 40; 
+        let level = 1; 
+
+       
+        function generateMaze(width, height) {
+            const WALL = 1;
+            const PATH = 0;
+            const END = 2;
+
+            
+            const maze = Array.from({ length: height }, () => Array(width).fill(WALL));
+
+            
+            function isInBounds(x, y) {
+                return x > 0 && x < width - 1 && y > 0 && y < height - 1;
+            }
+
+           
+            function carve(x, y) {
+                const directions = [
+                    [0, -1], 
+                    [0, 1],  
+                    [-1, 0], 
+                    [1, 0]  
+                ];
+
+                directions.sort(() => Math.random() - 0.5); 
+
+                for (const [dx, dy] of directions) {
+                    const nx = x + dx * 2;
+                    const ny = y + dy * 2;
+
+                    if (isInBounds(nx, ny) && maze[ny][nx] === WALL) {
+                        maze[y + dy][x + dx] = PATH; // Убираем стену между клетками
+                        maze[ny][nx] = PATH;
+                        carve(nx, ny);
+                    }
+                }
+            }
+
+           
+            maze[1][1] = PATH;
+            carve(1, 1);
+
+            
+            let endSet = false;
+            let endPosition = { x: 1, y: 1 };
+            while (!endSet) {
+                const x = Math.floor(Math.random() * (width - 2)) + 1;
+                const y = Math.floor(Math.random() * (height - 2)) + 1;
+
+                if (
+                    maze[y][x] === PATH &&
+                    [
+                        maze[y - 1][x],
+                        maze[y + 1][x],
+                        maze[y][x - 1],
+                        maze[y][x + 1]
+                    ].filter(cell => cell === WALL).length >= 3
+                ) {
+                    maze[y][x] = END;
+                    endPosition = { x, y };
+                    endSet = true;
+                }
+            }
+
+           
+            return { maze, endPosition };
+        }
+
+        
+        const mazes = [];
+        let currentMaze = {};
+
+       
+        function generateLevel(level) {
+            const size = 10 + level * 2;
+            tileSize = Math.min(canvas.width / size, canvas.height / size); 
+            currentMaze = generateMaze(size, size);
+            return currentMaze;
+        }
+
+   
+        generateLevel(level);
+
+      
+        function placePlayer(maze, endPosition) {
+            let playerPlaced = false;
+            let player = { x: 1, y: 1 };
+
+            while (!playerPlaced) {
+                const x = Math.floor(Math.random() * (maze[0].length - 2)) + 1;
+                const y = Math.floor(Math.random() * (maze.length - 2)) + 1;
+
+                if (maze[y][x] === 0 && (x !== endPosition.x || y !== endPosition.y)) {
+                    player = { x, y };
+                    playerPlaced = true;
+                }
+            }
+            return player;
+        }
+
+        let player = placePlayer(currentMaze.maze, currentMaze.endPosition);
+
+     
+        function drawMaze(maze) {
+            for (let row = 0; row < maze.length; row++) {
+                for (let col = 0; col < maze[row].length; col++) {
+                    if (maze[row][col] === 1) {
+                        ctx.fillStyle = '#000'; 
+                        ctx.fillRect(col * tileSize, row * tileSize, tileSize, tileSize);
+                    } else if (maze[row][col] === 2) {
+                        ctx.fillStyle = 'green';
+                        ctx.fillRect(col * tileSize, row * tileSize, tileSize, tileSize);
+                    }
+                }
+            }
+
+          
+            ctx.fillStyle = 'blue';
+            ctx.beginPath();
+            ctx.arc(
+                player.x * tileSize + tileSize / 2,
+                player.y * tileSize + tileSize / 2,
+                tileSize / 3,
+                0,
+                Math.PI * 2
+            );
+            ctx.fill();
+        }
+
+      
+        function movePlayer(dx, dy) {
+            const newX = player.x + dx;
+            const newY = player.y + dy;
+            const maze = currentMaze.maze;
+
+            if (maze[newY][newX] === 0 || maze[newY][newX] === 2) {
+                player.x = newX;
+                player.y = newY;
+
+                if (maze[newY][newX] === 2) {
+                    alert('Level Complete! Proceeding to the next level.');
+                    level++;
+                    currentMaze = generateLevel(level);
+                    player = placePlayer(currentMaze.maze, currentMaze.endPosition);
+                }
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                drawMaze(currentMaze.maze);
+            }
+        }
+
+       
+        window.addEventListener('keydown', (e) => {
+            switch (e.key) {
+                case 'ArrowUp':
+                    movePlayer(0, -1);
+                    break;
+                case 'ArrowDown':
+                    movePlayer(0, 1);
+                    break;
+                case 'ArrowLeft':
+                    movePlayer(-1, 0);
+                    break;
+                case 'ArrowRight':
+                    movePlayer(1, 0);
+                    break;
+            }
+        });
+
+       
+        drawMaze(currentMaze.maze);
+    </script>
+</body>
+</html>
