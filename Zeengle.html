@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zeengle Search </title>
+    <title>Zeengle</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -25,6 +25,7 @@
         .search-container {
             width: 100%;
             max-width: 600px;
+            text-align: center;
         }
         .search-input {
             width: 100%;
@@ -48,17 +49,93 @@
         .search-button:hover {
             background-color: #357ae8;
         }
+        .results {
+            margin-top: 30px;
+            text-align: left;
+            width: 100%;
+            max-width: 600px;
+        }
+        .result-item {
+            margin-bottom: 20px;
+        }
+        .result-item a {
+            color: #1a0dab;
+            font-size: 16px;
+            text-decoration: none;
+        }
+        .result-item a:hover {
+            text-decoration: underline;
+        }
+        .result-url {
+            font-size: 14px;
+            color: #006621;
+        }
     </style>
 </head>
 <body>
     <div class="logo">
-        <img src="Group 845.png" alt="Google Logo">
+        <img src="Group 845.png" alt="Zeengle Logo">
     </div>
     <div class="search-container">
-        <form action="https://www.google.com/search" method="GET">
-            <input type="text" name="q" class="search-input" placeholder="Search Zeengle or type a query...">
-            <button type="submit" class="search-button">Zeegle Search</button>
-        </form>
+        <input type="text" id="searchQuery" class="search-input" placeholder="Search Zeengle or type a query..." onkeydown="handleEnter(event)">
+        <button onclick="generateResults()" class="search-button">Zeengle Search</button>
     </div>
+    <div class="results" id="results"></div>
+
+    <script>
+        function generateResults() {
+            const query = document.getElementById('searchQuery').value;
+            const resultsContainer = document.getElementById('results');
+            resultsContainer.innerHTML = ''; 
+
+            if (!query) {
+                alert('Please enter a search query!');
+                return;
+            }
+
+        
+            const sampleResults = [
+                { title: `Wikipedia: ${query}`, url: `https://en.wikipedia.org/wiki/${query}` },
+                { title: `Official website about ${query}`, url: `https://www.officialsite.com/${query}` },
+                { title: `${query} - News and Updates`, url: `https://news.example.com/${query}` },
+                { title: `How to use ${query}`, url: `https://www.wikihow.com/Use-${query}` },
+                { title: `${query} Tutorials for Beginners`, url: `https://www.tutorialspoint.com/${query}` },
+                { title: `Reddit discussion about ${query}`, url: `https://www.reddit.com/r/${query}` },
+                { title: `Best Tools for ${query}`, url: `https://www.techtools.com/best-tools-for-${query}` },
+                { title: `Top 10 tips about ${query}`, url: `https://top10.com/tips/${query}` },
+                { title: `${query} in the news`, url: `https://www.bbc.com/search?q=${query}` },
+                { title: `Learn about ${query}`, url: `https://www.udemy.com/topic/${query}` },
+                { title: `Amazon results for ${query}`, url: `https://www.amazon.com/s?k=${query}` },
+                { title: `Images of ${query}`, url: `https://www.google.com/search?tbm=isch&q=${query}` },
+                { title: `${query} GitHub projects`, url: `https://github.com/search?q=${query}` },
+                { title: `Video tutorials on ${query}`, url: `https://www.youtube.com/results?search_query=${query}` },
+                { title: `Explore ${query} on Quora`, url: `https://www.quora.com/search?q=${query}` }
+            ];
+
+            sampleResults.forEach(result => {
+                const resultDiv = document.createElement('div');
+                resultDiv.className = 'result-item';
+
+                const link = document.createElement('a');
+                link.href = result.url;
+                link.target = '_blank';
+                link.textContent = result.title;
+
+                const urlText = document.createElement('div');
+                urlText.className = 'result-url';
+                urlText.textContent = result.url;
+
+                resultDiv.appendChild(link);
+                resultDiv.appendChild(urlText);
+                resultsContainer.appendChild(resultDiv);
+            });
+        }
+
+        function handleEnter(event) {
+            if (event.key === 'Enter') {
+                generateResults();
+            }
+        }
+    </script>
 </body>
 </html>
