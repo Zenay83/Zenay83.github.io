@@ -3,130 +3,293 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App Mockup</title>
+    <title>Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        :root {
+            --primary: #9b87f5;
+            --secondary: #7E69AB;
+            --accent: #1EAEDB;
+            --background: #F1F0FB;
+            --text: #222222;
+        }
+
+        * {
             margin: 0;
             padding: 0;
-            background-color: #cccccc;
-            overflow: hidden; 
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
         }
+
+        body {
+            background: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
         header {
+            position: relative;
+            height: 300px;
+            overflow: hidden;
+        }
+
+        .header-bg {
+            position: absolute;
+            inset: 0;
             background-image: url('https://cdn.pixabay.com/photo/2014/02/07/10/19/winter-260817_1280.jpg');
             background-size: cover;
             background-position: center;
-            padding: 20px;
-            text-align: center;
-            border-bottom: 2px solid #ddd;
+            filter: brightness(0.8);
         }
-        header img {
-            max-width: 250px;
+
+        .header-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.2));
+            backdrop-filter: blur(2px);
+        }
+
+        .logo-container {
+            position: relative;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo {
+            width: 250px;
             height: auto;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+            animation: float 6s ease-in-out infinite;
         }
+
         nav {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
             display: flex;
             justify-content: center;
-            background-color: #00e1ff;
-            padding: 10px;
+            gap: 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
-        nav button {
+
+        .nav-button {
             background: none;
             border: none;
-            margin: 0 10px;
-            font-size: 16px;
-            font-weight: bold;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text);
             cursor: pointer;
-            color: #333;
+            position: relative;
+            transition: color 0.3s;
         }
-        nav button.active {
-            color: #000;
-            border-bottom: 2px solid #000;
+
+        .nav-button::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary);
+            transform: scaleX(0);
+            transition: transform 0.3s;
+            transform-origin: right;
         }
+
+        .nav-button:hover::after,
+        .nav-button.active::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
         .content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
             display: none;
-            text-align: center;
-            padding: 20px;
+            animation: fadeIn 0.5s ease-out;
         }
+
         .content.active {
             display: block;
         }
+
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 20px;
-            justify-items: center;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+            padding: 1rem;
         }
+
         .card {
-            width: 150px;
-            border: 1px solid #ccc;
-            background: #fff;
-            padding: 10px;
-            text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            overflow: hidden;
         }
-        .card img {
-            width: 100%;
-            height: auto;
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
         }
-        .card p {
-            margin: 10px 0 0;
-            font-size: 14px;
-        }
+
         .card a {
             text-decoration: none;
-            color: #333;
-            font-weight: bold;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
         }
-        .snowflake {
-            position: fixed;
-            top: -10px;
-            color: white;
-            font-size: 1em;
-            pointer-events: none;
-            animation: fall linear infinite;
+
+        .card img {
+            width: 64px;
+            height: 64px;
+            object-fit: contain;
+            transition: transform 0.3s;
         }
-        @keyframes fall {
-            0% {
-                transform: translateY(0);
-            }
-            100% {
-                transform: translateY(100vh);
-            }
+
+        .card:hover img {
+            transform: scale(1.1);
         }
+
+        .card p {
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-align: center;
+            color: var(--text);
+        }
+
         .about-box {
-            background: white;
-            border: 1px solid black;
-            padding: 20px;
-            display: inline-block;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
+
+        .about-box h2 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .about-box p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
         .language-button {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1rem;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            width: 150px;
-            height: 50px;
-            margin: 10px;
-            background: white;
-            border: 1px solid black;
-            cursor: pointer;
+            gap: 1rem;
+            text-decoration: none;
+            color: var(--text);
+            margin: 0.5rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
+
+        .language-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
         .language-button img {
-            max-width: 30px;
-            margin-right: 10px;
+            width: 24px;
+            height: 24px;
+        }
+
+        .snowflake {
+            position: fixed;
+            color: white;
+            text-shadow: 0 0 5px rgba(255,255,255,0.8);
+            pointer-events: none;
+            z-index: 1000;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-10vh) rotate(0deg);
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                gap: 1rem;
+                padding: 0.5rem;
+            }
+
+            .nav-button {
+                padding: 0.5rem;
+                font-size: 0.9rem;
+            }
+
+            .grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 1rem;
+            }
+
+            .card {
+                padding: 1rem;
+            }
         }
     </style>
 </head>
 <body>
 
 <header>
-    <img src="Group 846.png" alt="Logo">
+    <div class="header-bg"></div>
+    <div class="header-overlay"></div>
+    <div class="logo-container">
+        <img src="Group 846.png" alt="Logo" class="logo">
+    </div>
 </header>
 
 <nav>
-    <button onclick="showSection('games')" class="active">Games</button>
-    <button onclick="showSection('apps')">Apps</button>
-    <button onclick="showSection('about')">About Us</button>
-    <button onclick="showSection('languages')">Languages</button>
+    <button onclick="showSection('games')" class="nav-button active">Games</button>
+    <button onclick="showSection('apps')" class="nav-button">Apps</button>
+    <button onclick="showSection('about')" class="nav-button">About Us</button>
+    <button onclick="showSection('languages')" class="nav-button">Languages</button>
 </nav>
 
 <div id="games" class="content active">
@@ -134,13 +297,13 @@
         <div class="card">
             <a href="https://zenay83.github.io/web-it-team-tic-tac-toe">
                 <img src="https://cdn-icons-png.flaticon.com/128/2314/2314034.png" alt="Game 1">
-                <p>Tic Tac Toe Against AI</p>
+                <p>Tic-Tac-Toe Against AI</p>
             </a>
         </div>
         <div class="card">
             <a href="https://zenay83.github.io/Web-it-team-coypu-tap-play">
                 <img src="https://cdn-icons-png.flaticon.com/128/17293/17293501.png" alt="Game 2">
-                <p>Tap the Nutria</p>
+                <p>Click the Coypu</p>
             </a>
         </div>
         <div class="card">
@@ -158,21 +321,21 @@
         <div class="card">
             <a href="https://zenay83.github.io/en/memori/memori">
                 <img src="https://cdn-icons-png.flaticon.com/128/14189/14189545.png" alt="Game 5">
-                <p>Memory</p>
+                <p>Memory Game</p>
             </a>
         </div>
         <div class="card">
             <a href="https://zenay83.github.io/game/giftsgame">
                 <img src="https://cdn-icons-png.flaticon.com/128/3835/3835818.png" alt="Game 6">
-                <p>Collect all the gifts</p>
+                <p>Collect All Gifts</p>
             </a>
         </div>
         <div class="card">
-            <a href="ghttps://zenay83.github.io/en/quiz">
+            <a href="https://zenay83.github.io/en/quiz">
                 <img src="https://cdn-icons-png.flaticon.com/128/8776/8776672.png" alt="Game 7">
                 <p>Quiz</p>
             </a>
-        </div>        
+        </div>
     </div>
 </div>
 
@@ -181,7 +344,7 @@
         <div class="card">
             <a href="https://zenay83.github.io/en/todo">
                 <img src="https://cdn-icons-png.flaticon.com/128/7692/7692809.png" alt="App 1">
-                <p>To Do App</p>
+                <p>Todo List App</p>
             </a>
         </div>
         <div class="card">
@@ -199,7 +362,7 @@
         <div class="card">
             <a href="https://zenay83.github.io/en/stopwatch">
                 <img src="https://cdn-icons-png.flaticon.com/128/11383/11383944.png" alt="App 4">
-                <p>Stopwatch</p>
+                <p>Timer</p>
             </a>
         </div>
         <div class="card">
@@ -211,7 +374,7 @@
         <div class="card">
             <a href="https://zenay83.github.io/Zeengle.html">
                 <img src="https://cdn-icons-png.flaticon.com/128/873/873117.png" alt="App 6">
-                <p>Zeegle</p>
+                <p>Zeengle</p>
             </a>
         </div>
     </div>
@@ -220,59 +383,54 @@
 <div id="about" class="content">
     <div class="about-box">
         <h2>Hello!</h2>
-        <p>My name is Zhenya, and I am a beginner web developer. I am glad to welcome you to my website. Here you can find my games and applications.</p>
-        <p>Also, I am a member of the Pancakes team.</p>
+        <p>My name is Zhenya, and I am a beginner web developer. Welcome to my website. Here you can find my games and applications.</p>
+        <p>I am also a member of the Pancakes team.</p>
         <p>Thank you for visiting!</p>
-    </div>    
+    </div>
 </div>
 
-    <div id="languages" class="content">
+<div id="languages" class="content">
+    <div style="text-align: center;">
         <a href="https://zenay83.github.io/index" class="language-button">
-            <img src="https://cdn-icons-png.flaticon.com/128/3054/3054051.png" alt="Language Icon">
+            <img src="https://cdn-icons-png.flaticon.com/128/3054/3054051.png" alt="Russian">
             <span>Russian</span>
         </a>
         <a href="https://zenay83.github.io/es/index4" class="language-button">
-            <img src="https://cdn-icons-png.flaticon.com/128/13482/13482017.png" alt="Language Icon">
+            <img src="https://cdn-icons-png.flaticon.com/128/13482/13482017.png" alt="Spanish">
             <span>Spanish</span>
         </a>
         <a href="https://zenay83.github.io/it/index3" class="language-button">
-            <img src="https://cdn-icons-png.flaticon.com/128/3053/3053996.png" alt="Language Icon">
+            <img src="https://cdn-icons-png.flaticon.com/128/3053/3053996.png" alt="Italian">
             <span>Italian</span>
         </a>
     </div>
-
+</div>
 
 <script>
     function showSection(sectionId) {
         const sections = document.querySelectorAll('.content');
-        const buttons = document.querySelectorAll('nav button');
-
-        sections.forEach(section => {
-            section.classList.remove('active');
-        });
-
-        buttons.forEach(button => {
-            button.classList.remove('active');
-        });
-
+        const buttons = document.querySelectorAll('.nav-button');
+        
+        sections.forEach(section => section.classList.remove('active'));
+        buttons.forEach(button => button.classList.remove('active'));
+        
         document.getElementById(sectionId).classList.add('active');
-        document.querySelector(`nav button[onclick="showSection('${sectionId}')"]`).classList.add('active');
+        document.querySelector(`button[onclick="showSection('${sectionId}')"]`).classList.add('active');
     }
 
     function createSnowflake() {
         const snowflake = document.createElement('div');
         snowflake.classList.add('snowflake');
         snowflake.textContent = '❄';
-
+        
         snowflake.style.left = Math.random() * window.innerWidth + 'px';
         snowflake.style.fontSize = Math.random() * 10 + 10 + 'px';
-        snowflake.style.animationDuration = Math.random() * 5 + 5 + 's';
-
+        snowflake.style.opacity = Math.random() * 0.5 + 0.5;
+        snowflake.style.animationDuration = Math.random() * 3 + 4 + 's';
+        
         document.body.appendChild(snowflake);
-
-        setTimeout(() => {
-            snowflake.remove();
-        }, 10000); 
+        
+        setTimeout(() => snowflake.remove(), 10000);
     }
 
     setInterval(createSnowflake, 200);
