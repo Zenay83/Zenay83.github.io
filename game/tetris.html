@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enhanced Tetris</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background-color: #000;
+      color: #fff;
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 20px;
+      overflow: hidden;
+      touch-action: none;
+    }
+
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      max-width: 100%;
+    }
+
+    .info {
+      margin-bottom: 10px;
+      font-size: 24px;
+      font-weight: 500;
+      text-align: center;
+      padding: 10px 20px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .tetris {
+      display: grid;
+      grid-template-rows: repeat(20, minmax(15px, 30px));
+      grid-template-columns: repeat(10, minmax(15px, 30px));
+      gap: 1px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 4px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+      animation: scaleIn 0.3s ease-out;
+    }
+
+    .cell {
+      border-radius: 2px;
+      background-color: rgba(0, 0, 0, 0.6);
+      transition: background-color 0.15s ease;
+    }
+
+    .cell.filled {
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .cell.type-O { background: rgb(255, 213, 0); }
+    .cell.type-I { background: rgb(0, 184, 212); }
+    .cell.type-S { background: rgb(255, 87, 34); }
+    .cell.type-Z { background: rgb(76, 175, 80); }
+    .cell.type-L { background: rgb(255, 152, 0); }
+    .cell.type-J { background: rgb(156, 39, 176); }
+    .cell.type-T { background: rgb(103, 58, 183); }
+
+    .controls {
+      display: none;
+      gap: 10px;
+      margin-top: 20px;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .controls-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .control-btn {
+      width: 60px;
+      height: 60px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.15s ease, background-color 0.15s ease;
+    }
+
+    .control-btn:active {
+      transform: scale(0.95);
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    @media (max-width: 768px) {
+      .controls {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .tetris {
+        grid-template-rows: repeat(20, minmax(12px, 25px));
+        grid-template-columns: repeat(10, minmax(12px, 25px));
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes scaleIn {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .barrier-animation {
+      animation: barrierSlideUp 0.3s ease-out;
+    }
+
+    @keyframes barrierSlideUp {
+      from { transform: translateY(100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <div class="info" id="info">Level: 1</div>
+    <div class="tetris" id="tetris"></div>
+    <div class="controls">
+      <div class="controls-row">
+        <button class="control-btn" id="rotateBtn">↻</button>
+      </div>
+      <div class="controls-row">
+        <button class="control-btn" id="leftBtn">←</button>
+        <button class="control-btn" id="downBtn">↓</button>
+        <button class="control-btn" id="rightBtn">→</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const ROWS = 20;
+    const COLS = 10;
+    const MAX_LEVEL = 10;
+    const BARRIER_PATTERNS = [
+      [1, 1, 0, 1, 1, 1, 0, 1, 1, 1],
+      [1, 0, 1, 1, 0, 0, 1, 1, 0, 1],
+      [1, 1, 1, 0, 0, 0, 0, 1, 1, 1],
+      [1, 0, 1, 0, 1, 1, 0, 1, 0, 1],
+      [0, 1, 1, 1, 0, 0, 1, 1, 1, 0]
+    ];
+
+    const SHAPES = {
+      O: [[1, 1], [1, 1]],
+      I: [[1], [1], [1], [1]],
+      S: [[0, 1, 1], [1, 1, 0]],
+      Z: [[1, 1, 0], [0, 1, 1]],
+      L: [[1, 0], [1, 0], [1, 1]],
+      J: [[0, 1], [0, 1], [1, 1]],
+      T: [[1, 1, 1], [0, 1, 0]]
+    };
+
+    const COLORS = {
+      O: "type-O",
+      I: "type-I",
+      S: "type-S",
+      Z: "type-Z",
+      L: "type-L",
+      J: "type-J",
+      T: "type-T"
+    };
+
+    let grid = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+    let currentShape = getRandomShape();
+    let position = { row: 0, col: Math.floor(COLS / 2) - 1 };
+    let level = 1;
+    let speed = 500;
+    let gameInterval;
+
+    const tetris = document.getElementById("tetris");
+    const info = document.getElementById("info");
+    const leftBtn = document.getElementById("leftBtn");
+    const rightBtn = document.getElementById("rightBtn");
+    const downBtn = document.getElementById("downBtn");
+    const rotateBtn = document.getElementById("rotateBtn");
+
+    function updateInfo() {
+      info.textContent = `Level: ${level}`;
+    }
+
+    function createGrid() {
+      tetris.innerHTML = "";
+      for (let row = 0; row < ROWS; row++) {
+        for (let col = 0; col < COLS; col++) {
+          const cell = document.createElement("div");
+          cell.className = "cell";
+          if (grid[row][col] !== 0) {
+            cell.classList.add("filled", COLORS[grid[row][col]]);
+          }
+          tetris.appendChild(cell);
+        }
+      }
+
+      const { shape, type } = currentShape;
+      for (let r = 0; r < shape.length; r++) {
+        for (let c = 0; c < shape[r].length; c++) {
+          if (shape[r][c]) {
+            const gridRow = position.row + r;
+            const gridCol = position.col + c;
+            if (gridRow >= 0 && gridRow < ROWS && gridCol >= 0 && gridCol < COLS) {
+              const cell = tetris.children[gridRow * COLS + gridCol];
+              cell.classList.add(COLORS[type]);
+            }
+          }
+        }
+      }
+    }
+
+    function getRandomShape() {
+      const keys = Object.keys(SHAPES);
+      const randomKey = keys[Math.floor(Math.random() * keys.length)];
+      return { shape: SHAPES[randomKey], type: randomKey };
+    }
+
+    function canMove(newRow, newCol) {
+      const { shape } = currentShape;
+      for (let r = 0; r < shape.length; r++) {
+        for (let c = 0; c < shape[r].length; c++) {
+          if (shape[r][c]) {
+            const gridRow = newRow + r;
+            const gridCol = newCol + c;
+
+            if (
+              gridRow >= ROWS ||
+              gridCol < 0 ||
+              gridCol >= COLS ||
+              (gridRow >= 0 && grid[gridRow] && grid[gridRow][gridCol])
+            ) {
+              return false;
+            }
+          }
+        }
+      }
+      return true;
+    }
+
+    function updateGrid() {
+      const { shape, type } = currentShape;
+      for (let r = 0; r < shape.length; r++) {
+        for (let c = 0; c < shape[r].length; c++) {
+          if (shape[r][c]) {
+            const gridRow = position.row + r;
+            if (gridRow >= 0) {
+              grid[gridRow][position.col + c] = type;
+            }
+          }
+        }
+      }
+    }
+
+    function clearLines() {
+      let linesCleared = 0;
+      for (let row = ROWS - 1; row >= 0; row--) {
+        if (grid[row].every(cell => cell !== 0)) {
+          grid.splice(row, 1);
+          grid.unshift(Array(COLS).fill(0));
+          linesCleared++;
+          row++;
+        }
+      }
+      return linesCleared;
+    }
+
+    function addBarrier() {
+
+      if (level === 1) {
+        return;
+      }
+      
+  
+      const barrierHeight = Math.min(Math.floor((level - 1) / 2) + 1, 5);
+      const pattern = BARRIER_PATTERNS[level % BARRIER_PATTERNS.length];
+
+ 
+      for (let i = 0; i < barrierHeight; i++) {
+        const newRow = pattern.map(cell => cell ? getRandomType() : 0);
+        grid[ROWS - 1 - i] = newRow; 
+      }
+
+
+      tetris.classList.add('barrier-animation');
+      setTimeout(() => tetris.classList.remove('barrier-animation'), 300);
+    }
+
+    function getRandomType() {
+      const types = Object.keys(SHAPES);
+      return types[Math.floor(Math.random() * types.length)];
+    }
+
+    function moveDown() {
+      if (canMove(position.row + 1, position.col)) {
+        position.row++;
+      } else {
+        if (position.row < 0) {
+          gameOver();
+          return;
+        }
+
+        updateGrid();
+        const linesCleared = clearLines();
+
+        if (grid[0].some(cell => cell !== 0)) {
+          gameOver();
+        } else if (linesCleared > 0 && grid.flat().filter(cell => cell !== 0).length === 0) {
+          nextLevel();
+        } else {
+          currentShape = getRandomShape();
+          position = { row: 0, col: Math.floor(COLS / 2) - 1 };
+        }
+      }
+      createGrid();
+    }
+
+    function gameOver() {
+      clearInterval(gameInterval);
+      alert(`Game Over at Level ${level}! Try again.`);
+      resetGame();
+    }
+
+    function resetGame() {
+      level = 1;
+      speed = 500;
+      resetLevel();
+      updateInfo();
+      startGame();
+    }
+
+    function resetLevel() {
+      grid = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+      addBarrier();
+      currentShape = getRandomShape();
+      position = { row: 0, col: Math.floor(COLS / 2) - 1 };
+      createGrid();
+    }
+
+    function nextLevel() {
+      if (level < MAX_LEVEL) {
+        level++;
+        speed = Math.max(100, 500 - (level - 1) * 50);
+        updateInfo();
+        resetLevel();
+        clearInterval(gameInterval);
+        startGame();
+      } else {
+        alert("Congratulations! You've completed all levels!");
+        resetGame();
+      }
+    }
+
+    function rotateShape() {
+      const { shape } = currentShape;
+      const newShape = shape[0].map((_, colIndex) =>
+        shape.map(row => row[colIndex]).reverse()
+      );
+      const prevShape = currentShape.shape;
+      currentShape.shape = newShape;
+
+      if (!canMove(position.row, position.col)) {
+        currentShape.shape = prevShape;
+      }
+    }
+
+    function handleKeyPress(event) {
+      if (event.key === "ArrowLeft" && canMove(position.row, position.col - 1)) {
+        position.col--;
+      } else if (event.key === "ArrowRight" && canMove(position.row, position.col + 1)) {
+        position.col++;
+      } else if (event.key === "ArrowDown") {
+        moveDown();
+      } else if (event.key === "ArrowUp") {
+        rotateShape();
+      }
+      createGrid();
+    }
+
+    leftBtn?.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      if (canMove(position.row, position.col - 1)) {
+        position.col--;
+        createGrid();
+      }
+    });
+
+    rightBtn?.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      if (canMove(position.row, position.col + 1)) {
+        position.col++;
+        createGrid();
+      }
+    });
+
+    downBtn?.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      moveDown();
+    });
+
+    rotateBtn?.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      rotateShape();
+      createGrid();
+    });
+
+    function startGame() {
+      gameInterval = setInterval(moveDown, speed);
+    }
+
+    document.addEventListener("keydown", handleKeyPress);
+    resetLevel();
+    startGame();
+    updateInfo();
+  </script>
+</body>
+</html>
