@@ -215,6 +215,54 @@
             height: 24px;
         }
 
+        .language-toggle {
+            position: fixed;
+            right: 20px;
+            top: 20px;
+            background: #000;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            z-index: 1000;
+            transition: transform 0.3s;
+        }
+
+        .language-toggle:hover {
+            transform: scale(1.05);
+        }
+
+        .language-toggle img {
+            width: 24px;
+            height: 24px;
+            filter: invert(1);
+        }
+
+        .language-accordion {
+            position: fixed;
+            right: 20px;
+            top: 80px;
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            width: 250px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transform: translateY(-10px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .language-accordion.active {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
         .snowflake {
             position: fixed;
             color: white;
@@ -277,6 +325,25 @@
 </head>
 <body>
 
+<button class="language-toggle" onclick="toggleLanguages()">
+    <img src="https://cdn-icons-png.flaticon.com/512/814/814513.png" alt="World">
+</button>
+
+<div class="language-accordion" id="languageAccordion">
+    <a href="https://zenay83.github.io/index" class="language-button">
+        <img src="https://cdn-icons-png.flaticon.com/128/3054/3054051.png" alt="Russian">
+        <span>Russian</span>
+    </a>
+    <a href="https://zenay83.github.io/es/index4" class="language-button">
+        <img src="https://cdn-icons-png.flaticon.com/128/13482/13482017.png" alt="Spanish">
+        <span>Spanish</span>
+    </a>
+    <a href="https://zenay83.github.io/it/index3" class="language-button">
+        <img src="https://cdn-icons-png.flaticon.com/128/3053/3053996.png" alt="Italian">
+        <span>Italian</span>
+    </a>
+</div>
+
 <header>
     <div class="header-bg"></div>
     <div class="header-overlay"></div>
@@ -289,7 +356,7 @@
     <button onclick="showSection('games')" class="nav-button active">Games</button>
     <button onclick="showSection('apps')" class="nav-button">Apps</button>
     <button onclick="showSection('about')" class="nav-button">About Us</button>
-    <button onclick="showSection('languages')" class="nav-button">Languages</button>
+    <button onclick="showSection('shopping')" class="nav-button">Shopping</button>
 </nav>
 
 <div id="games" class="content active">
@@ -297,13 +364,13 @@
         <div class="card">
             <a href="https://zenay83.github.io/web-it-team-tic-tac-toe">
                 <img src="https://cdn-icons-png.flaticon.com/128/2314/2314034.png" alt="Game 1">
-                <p>Tic-Tac-Toe Against AI</p>
+                <p>Tic-Tac-Toe against AI</p>
             </a>
         </div>
         <div class="card">
             <a href="https://zenay83.github.io/Web-it-team-coypu-tap-play">
                 <img src="https://cdn-icons-png.flaticon.com/128/17293/17293501.png" alt="Game 2">
-                <p>Click the Coypu</p>
+                <p>Click on the Coypu</p>
             </a>
         </div>
         <div class="card">
@@ -336,12 +403,12 @@
                 <p>Quiz</p>
             </a>
         </div>
-    </div>
-    <div class="card">
-        <a href="https://zenay83.github.io/game/tetris.html">
-            <img src="https://cdn-icons-png.flaticon.com/128/1888/1888013.png" alt="Game 8">
-            <p>Tetris</p>
-        </a>
+        <div class="card">
+            <a href="https://zenay83.github.io/game/tetris.html">
+                <img src="https://cdn-icons-png.flaticon.com/128/1888/1888013.png" alt="Game 8">
+                <p>Tetris</p>
+            </a>
+        </div>
     </div>
 </div>
 
@@ -350,7 +417,7 @@
         <div class="card">
             <a href="https://zenay83.github.io/en/todo">
                 <img src="https://cdn-icons-png.flaticon.com/128/7692/7692809.png" alt="App 1">
-                <p>Todo List App</p>
+                <p>To-Do List App</p>
             </a>
         </div>
         <div class="card">
@@ -389,26 +456,38 @@
 <div id="about" class="content">
     <div class="about-box">
         <h2>Hello!</h2>
-        <p>My name is Zhenya, and I am a beginner web developer. Welcome to my website. Here you can find my games and applications.</p>
+        <p>My name is Zhenya, and I am a beginner web developer. I am glad to welcome you to my site. Here you can find my games and applications.</p>
         <p>I am also a member of the Pancakes team.</p>
         <p>Thank you for visiting!</p>
     </div>
 </div>
 
-<div id="languages" class="content">
-    <div style="text-align: center;">
-        <a href="https://zenay83.github.io/index" class="language-button">
-            <img src="https://cdn-icons-png.flaticon.com/128/3054/3054051.png" alt="Russian">
-            <span>Russian</span>
-        </a>
-        <a href="https://zenay83.github.io/es/index4" class="language-button">
-            <img src="https://cdn-icons-png.flaticon.com/128/13482/13482017.png" alt="Spanish">
-            <span>Spanish</span>
-        </a>
-        <a href="https://zenay83.github.io/it/index3" class="language-button">
-            <img src="https://cdn-icons-png.flaticon.com/128/3053/3053996.png" alt="Italian">
-            <span>Italian</span>
-        </a>
+<div id="shopping" class="content">
+    <div class="grid">
+        <div class="card shopping-button">
+            <a href="https://www.temu.com">
+                <img src="https://img.icons8.com/?size=100&id=UEKWbHn3Q2D1&format=png" alt="Shopping 1">
+                <p>Temu</p>
+            </a>
+        </div>
+        <div class="card shopping-button">
+            <a href="https://aliexpress.com">
+                <img src="https://cdn.brandfetch.io/idonPjBUnw/theme/dark/logo.svg?c=1bx1742718803633id64Mup7acFP3grQ16&t=1667589786475" alt="Shopping 2">
+                <p>AliExpress</p>
+            </a>
+        </div>
+        <div class="card shopping-button">
+            <a href="https://www.wildberries.ru">
+                <img src="https://cdn-icons-png.flaticon.com/128/349/349250.png" alt="Shopping 3">
+                <p>Ebay</p>
+            </a>
+        </div>
+        <div class="card shopping-button">
+            <a href="https://amazon.com">
+                <img src="https://seeklogo.com/images/A/amazon-logo-E45AFA9F25-seeklogo.com.png" alt="Shopping 4">
+                <p>Amazon</p>
+            </a>
+        </div>
     </div>
 </div>
 
@@ -417,12 +496,31 @@
         const sections = document.querySelectorAll('.content');
         const buttons = document.querySelectorAll('.nav-button');
         
-        sections.forEach(section => section.classList.remove('active'));
-        buttons.forEach(button => button.classList.remove('active'));
-        
+        sections.forEach(section => {
+            section.classList.remove('active');
+        });
+
+        buttons.forEach(button => {
+            button.classList.remove('active');
+        });
+
         document.getElementById(sectionId).classList.add('active');
         document.querySelector(`button[onclick="showSection('${sectionId}')"]`).classList.add('active');
     }
+
+    function toggleLanguages() {
+        const accordion = document.getElementById('languageAccordion');
+        accordion.classList.toggle('active');
+    }
+
+    document.addEventListener('click', (e) => {
+        const accordion = document.getElementById('languageAccordion');
+        const toggle = document.querySelector('.language-toggle');
+        
+        if (!accordion.contains(e.target) && !toggle.contains(e.target)) {
+            accordion.classList.remove('active');
+        }
+    });
 
     function createSnowflake() {
         const snowflake = document.createElement('div');
@@ -444,3 +542,5 @@
 
 </body>
 </html>
+
+
